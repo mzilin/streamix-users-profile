@@ -9,13 +9,13 @@ import java.util.UUID;
 
 public record CreateUserProfileRequest(
 
-        @NotBlank(message = "profileName" + CANNOT_BE_BLANK)
+        @NotBlank(message = "profileName " + CANNOT_BE_BLANK)
         String profileName,
 
-        @NotNull(message = "avatarId" + CANNOT_BE_NULL)
+        @NotNull(message = "avatarId " + CANNOT_BE_NULL)
         UUID avatarId,
 
-        @NotNull(message = "isKid" + CANNOT_BE_NULL)
+        @NotNull(message = "isKid " + CANNOT_BE_NULL)
         boolean isKid
 
 ){}

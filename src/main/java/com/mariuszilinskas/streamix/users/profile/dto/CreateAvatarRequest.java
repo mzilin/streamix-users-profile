@@ -8,10 +8,10 @@ import static com.mariuszilinskas.streamix.web.constant.ValidationMessages.*;
 
 public record CreateAvatarRequest(
 
-        @NotBlank(message = "avatarName" + CANNOT_BE_BLANK)
+        @NotBlank(message = "avatarName " + CANNOT_BE_BLANK)
         String avatarName,
 
-        @NotNull(message = "file" + CANNOT_BE_NULL)
+        @NotNull(message = "file " + CANNOT_BE_NULL)
         MultipartFile file
 
 ){}

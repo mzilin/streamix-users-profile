@@ -9,10 +9,10 @@ import java.util.UUID;
 
 public record CreateUserDefaultProfileRequest(
 
-        @NotNull(message = "userId" + CANNOT_BE_NULL)
+        @NotNull(message = "userId " + CANNOT_BE_NULL)
         UUID userId,
 
-        @NotBlank(message = "firstName" + CANNOT_BE_BLANK)
+        @NotBlank(message = "firstName " + CANNOT_BE_BLANK)
         String firstName
 
 ){}
