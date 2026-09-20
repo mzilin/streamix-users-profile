@@ -1,5 +1,6 @@
 package com.mariuszilinskas.streamix.users.profile.config;
 
+import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -17,10 +18,10 @@ public class AwsS3Config {
 
     @Bean
     public AmazonS3 s3Client() {
-        BasicAWSCredentials credentials = new BasicAWSCredentials(awsProperties.accessKey(), awsProperties.secretKey());
+        AWSCredentials credentials = new BasicAWSCredentials(awsProperties.accessKey(), awsProperties.secretKey());
         return AmazonS3Client.builder()
-                .withRegion(awsProperties.s3().region())
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(awsProperties.s3().region())
                 .build();
     }
 
