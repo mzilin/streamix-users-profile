@@ -9,18 +9,13 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+  kafka:
+    bootstrap-servers: localhost:9092
   rabbitmq:
     host: localhost
     port: 5672
     username: guest
     password: guest
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        "[spring.json.add.type.headers]": false
 
 # Service discovery configuration for CI
 eureka:
@@ -39,17 +34,9 @@ aws:
 # Messaging configuration for CI
 kafka:
   topics:
-    user-registered:
-      name: dummy-topic
-      dlt:
-        name: dummy-topic-dlt
-        partitions: 1
-        replication-factor: 1
-        retention: 1d
-  consumer:
-    auto-offset-reset: earliest
-    groups:
-      profile-registration: dummy-group
+    user-registered: : dummy-topic
+  groups:
+    profile-registration: dummy-group
 
 rabbitmq:
   exchange: dummy-exchange

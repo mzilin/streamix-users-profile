@@ -28,11 +28,6 @@ spring:
     database-platform: ${DB_DIALECT}
     hibernate:
       ddl-auto: update
-  rabbitmq:
-    host: ${RMQ_HOST}
-    port: ${RMQ_PORT}
-    username: ${RMQ_USERNAME}
-    password: ${RMQ_PASSWORD}
   kafka:
     bootstrap-servers: kafka:9092
     producer:
@@ -40,6 +35,11 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         "[spring.json.add.type.headers]": false
+  rabbitmq:
+    host: ${RMQ_HOST}
+    port: ${RMQ_PORT}
+    username: ${RMQ_USERNAME}
+    password: ${RMQ_PASSWORD}
  
 # AWS properties
 aws:
@@ -62,17 +62,9 @@ eureka:
 # Messaging properties
 kafka:
   topics:
-    user-registered:
-      name: ${KAFKA_USER_REGISTERED_TOPIC}
-      dlt:
-        name: ${KAFKA_USER_REGISTERED_DLT_TOPIC}
-        partitions: 1
-        replication-factor: 1
-        retention: 1d
-  consumer:
-    auto-offset-reset: earliest
-    groups:
-      profile-registration: ${KAFKA_PROFILE_REGISTRATION_GROUP}
+    user-registered: ${KAFKA_USER_REGISTERED_TOPIC}
+  groups:
+    profile-registration: ${KAFKA_PROFILE_REGISTRATION_GROUP}
 
 rabbitmq:
   exchange: ${RMQ_EXCHANGE}
