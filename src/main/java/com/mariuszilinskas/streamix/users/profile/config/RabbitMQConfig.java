@@ -1,12 +1,12 @@
 package com.mariuszilinskas.streamix.users.profile.config;
 
+import com.mariuszilinskas.streamix.users.profile.properties.RabbitMQProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,48 +14,35 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class RabbitMQConfig {
 
-    @Value("${rabbitmq.exchange}")
-    private String exchange;
-
-    @Value("${rabbitmq.queues.profile-setup}")
-    private String profileSetupQueue;
-
-    @Value("${rabbitmq.routing-keys.profile-setup}")
-    private String profileSetupRoutingKey;
-
-    @Value("${rabbitmq.queues.delete-user-data}")
-    private String deleteUserDataQueue;
-
-    @Value("${rabbitmq.routing-keys.delete-user-data}")
-    private String deleteUserDataRoutingKey;
+    private final RabbitMQProperties rabbitMQProperties;
 
     @Bean
     public DirectExchange exchange() {
-        return new DirectExchange(exchange);
+        return new DirectExchange(rabbitMQProperties.exchange());
     }
 
     @Bean
     public Queue profileSetupQueue() {
-        return new Queue(profileSetupQueue, true);
+        return new Queue(rabbitMQProperties.queues().profileSetup(), true);
     }
 
     @Bean
     public Binding profileSetupBinding() {
         return BindingBuilder.bind(profileSetupQueue())
                 .to(exchange())
-                .with(profileSetupRoutingKey);
+                .with(rabbitMQProperties.routingKeys().profileSetup());
     }
 
     @Bean
     public Queue deleteUserDataQueue() {
-        return new Queue(deleteUserDataQueue, true);
+        return new Queue(rabbitMQProperties.queues().deleteUserData(), true);
     }
 
     @Bean
     public Binding deleteUserDataBinding() {
         return BindingBuilder.bind(deleteUserDataQueue())
                 .to(exchange())
-                .with(deleteUserDataRoutingKey);
+                .with(rabbitMQProperties.routingKeys().deleteUserData());
     }
 
     @Bean

@@ -54,8 +54,10 @@ kafka:
 rabbitmq:
   exchange: dummy-exchange
   queues:
+    profile-setup: dummy-queue
     delete-user-data: dummy-queue
   routing-keys:
+    profile-setup: dummy-key
     delete-user-data: dummy-key
 
 # Observability configuration for CI
