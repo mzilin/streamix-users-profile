@@ -5,11 +5,11 @@ import com.mariuszilinskas.streamix.users.profile.exception.EntityExistsExceptio
 import com.mariuszilinskas.streamix.users.profile.exception.IncorrectFileException;
 import com.mariuszilinskas.streamix.users.profile.exception.ResourceNotFoundException;
 import com.mariuszilinskas.streamix.users.profile.model.Avatar;
+import com.mariuszilinskas.streamix.users.profile.properties.AwsProperties;
 import com.mariuszilinskas.streamix.users.profile.repository.AvatarRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,12 +31,7 @@ public class AvatarServiceImpl implements AvatarService {
     private static final Logger logger = LoggerFactory.getLogger(AvatarServiceImpl.class);
     private final AvatarRepository avatarRepository;
     private final S3Service s3Service;
-
-    @Value("${aws.s3.avatarBucketName}")
-    private String avatarBucketName;
-
-    @Value("${aws.s3.region}")
-    private String region;
+    private final AwsProperties awsProperties;
 
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
             ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg"
@@ -47,7 +42,7 @@ public class AvatarServiceImpl implements AvatarService {
         logger.info("Creating Avatar: '{}", request.avatarName());
         checkNameExists(request.avatarName());
         String objectKey = generateObjectKey(request.file().getOriginalFilename());
-        s3Service.uploadFile(avatarBucketName, objectKey, request.file());
+        s3Service.uploadFile(awsProperties.s3().avatarBucketName(), objectKey, request.file());
         return populateNewAvatarWithRequestData(request, objectKey);
     }
 
@@ -83,7 +78,12 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     private String generateObjectUrl(String objectKey) {
-        return String.format("https://%s.s3.%s.amazonaws.com/%s", avatarBucketName, region, objectKey);
+        return String.format(
+                "https://%s.s3.%s.amazonaws.com/%s",
+                awsProperties.s3().avatarBucketName(),
+                awsProperties.s3().region(),
+                objectKey
+        );
     }
 
     @Override
@@ -116,7 +116,7 @@ public class AvatarServiceImpl implements AvatarService {
     public void deleteAvatar(UUID avatarId) {
         logger.info("Deleting Avatar [id: '{}']", avatarId);
         Avatar avatar = findAvatarById(avatarId);
-        s3Service.deleteFile(avatar.getObjectKey(), avatarBucketName);
+        s3Service.deleteFile(avatar.getObjectKey(), awsProperties.s3().avatarBucketName());
         avatarRepository.delete(avatar);
     }
 
