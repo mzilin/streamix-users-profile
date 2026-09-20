@@ -9,8 +9,7 @@ public record KafkaProperties(
 ) {
 
     public record Topics(
-            String userRegistered,
-            String userRegisteredDlt
+            String userRegistered
     ) {}
 
     public record Groups(
