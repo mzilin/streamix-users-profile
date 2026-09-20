@@ -2,14 +2,14 @@
 server:
   port: 8111
 
-# Information for the info endpoint
+# Application metadata
 info:
   app:
     environment: DEV
     name: ${spring.application.name}
     description: Profile Service - Local Instance
 
-# Spring application properties
+# Spring properties
 spring:
   application:
     name: users-profile
@@ -33,16 +33,23 @@ spring:
     port: ${RMQ_PORT}
     username: ${RMQ_USERNAME}
     password: ${RMQ_PASSWORD}
-
-# AWS configuration
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        "[spring.json.add.type.headers]": false
+ 
+# AWS properties
 aws:
-  accessKey: ${AWS_ACCESS_KEY}
-  secretKey: ${AWS_SECRET_KEY}
+  access-key: ${AWS_ACCESS_KEY}
+  secret-key: ${AWS_SECRET_KEY}
   s3:
     region: ${AWS_REGION}
-    avatarBucketName: ${AWS_AVATAR_BUCKET_NAME}
+    avatar-bucket-name: ${AWS_AVATAR_BUCKET_NAME}
 
-# Eureka configuration
+# Service discovery properties
 eureka:
   client:
     fetchRegistry: true
@@ -52,17 +59,29 @@ eureka:
   instance:
     preferIpAddress: true
 
-# RabbitMQ settings
+# Messaging properties
+kafka:
+  topics:
+    user-registered:
+      name: ${KAFKA_USER_REGISTERED_TOPIC}
+      dlt:
+        name: ${KAFKA_USER_REGISTERED_DLT_TOPIC}
+        partitions: 1
+        replication-factor: 1
+        retention: 1d
+  consumer:
+    auto-offset-reset: earliest
+    groups:
+      profile-registration: ${KAFKA_PROFILE_REGISTRATION_GROUP}
+
 rabbitmq:
   exchange: ${RMQ_EXCHANGE}
   queues:
-    profile-setup: ${RMQ_PROFILE_SETUP_Q}
     delete-user-data: ${RMQ_DELETE_USER_DATA_Q}
   routing-keys:
-    profile-setup: ${RMQ_PROFILE_SETUP_RK}
     delete-user-data: ${RMQ_DELETE_USER_DATA_RK}
 
-# Management properties
+# Management and observability properties
 management:
   info:
     env:
@@ -88,6 +107,7 @@ management:
       export:
         url: ${OTEL_METRICS_ENDPOINT}
 
+# Logging properties
 logging:
   level:
     root: INFO

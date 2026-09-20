@@ -1,4 +1,4 @@
-# Spring application properties for CI
+# Spring configuration for CI
 spring:
   datasource:
     url: jdbc:h2:mem:testdb
@@ -14,32 +14,51 @@ spring:
     port: 5672
     username: guest
     password: guest
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        "[spring.json.add.type.headers]": false
 
-# AWS configuration for CI
-aws:
-  accessKey: dummy-key
-  secretKey: dummy-secret
-  s3:
-    region: dummy-region
-    avatarBucketName: dummy-bucket
-
-# RabbitMQ settings for CI
-rabbitmq:
-  exchange: dummy-exchange
-  queues:
-    profile-setup: dummy-queue
-    delete-user-data: dummy-queue
-  routing-keys:
-    profile-setup: dummy-key
-    delete-user-data: dummy-key
-
-# Eureka configuration for CI
+# Service discovery configuration for CI
 eureka:
   client:
     fetchRegistry: false
     registerWithEureka: false
 
-# Management configuration for CI
+# AWS configuration for CI
+aws:
+  access-key: dummy-key
+  secret-key: dummy-secret
+  s3:
+    region: dummy-region
+    avatar-bucket-name: dummy-bucket
+
+# Messaging configuration for CI
+kafka:
+  topics:
+    user-registered:
+      name: dummy-topic
+      dlt:
+        name: dummy-topic-dlt
+        partitions: 1
+        replication-factor: 1
+        retention: 1d
+  consumer:
+    auto-offset-reset: earliest
+    groups:
+      profile-registration: dummy-group
+
+rabbitmq:
+  exchange: dummy-exchange
+  queues:
+    delete-user-data: dummy-queue
+  routing-keys:
+    delete-user-data: dummy-key
+
+# Observability configuration for CI
 management:
   opentelemetry:
     tracing:
