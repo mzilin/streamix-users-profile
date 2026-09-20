@@ -1,4 +1,4 @@
-package com.mariuszilinskas.streamix.users.profile.propertiea;
+package com.mariuszilinskas.streamix.users.profile.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
