@@ -19,7 +19,7 @@ eureka:
     fetch-registry: false
     register-with-eureka: false
 
-# AWS configuration for CI
+# CI AWS configuration
 aws:
   access-key: dummy-key
   secret-key: dummy-secret
