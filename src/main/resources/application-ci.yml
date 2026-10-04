@@ -1,52 +1,35 @@
-# Spring application properties for CI
+# CI application and infrastructure configuration
 spring:
   datasource:
     url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
+    driver-class-name: org.h2.Driver
     username: sa
     password:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+      ddl-auto: create-drop
+  kafka:
+    listener:
+      auto-startup: false
 
-# AWS configuration for CI
-aws:
-  accessKey: dummy-key
-  secretKey: dummy-secret
-  s3:
-    region: dummy-region
-    avatarBucketName: dummy-bucket
-
-# RabbitMQ settings for CI
-rabbitmq:
-  exchange: dummy-exchange
-  queues:
-    profile-setup: dummy-queue
-    delete-user-data: dummy-queue
-  routing-keys:
-    profile-setup: dummy-key
-    delete-user-data: dummy-key
-
-# Eureka configuration for CI
+# CI service discovery configuration
 eureka:
   client:
-    fetchRegistry: false
-    registerWithEureka: false
+    fetch-registry: false
+    register-with-eureka: false
 
-# Management configuration for CI
+# CI AWS configuration
+aws:
+  access-key: dummy-key
+  secret-key: dummy-secret
+
+# CI observability configuration
 management:
-  opentelemetry:
-    tracing:
-      export:
-        otlp:
-          endpoint: http://localhost:4318/v1/traces
+  tracing:
+    export:
+      enabled: false
   otlp:
     metrics:
       export:
-        url: http://localhost:4318/v1/metrics
+        enabled: false

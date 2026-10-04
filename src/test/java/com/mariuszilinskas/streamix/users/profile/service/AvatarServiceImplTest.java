@@ -6,6 +6,7 @@ import com.mariuszilinskas.streamix.users.profile.exception.FileUploadException;
 import com.mariuszilinskas.streamix.users.profile.exception.IncorrectFileException;
 import com.mariuszilinskas.streamix.users.profile.exception.ResourceNotFoundException;
 import com.mariuszilinskas.streamix.users.profile.model.Avatar;
+import com.mariuszilinskas.streamix.users.profile.properties.AwsProperties;
 import com.mariuszilinskas.streamix.users.profile.repository.AvatarRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +36,9 @@ public class AvatarServiceImplTest {
     @Mock
     private S3Service s3Service;
 
+    @Mock
+    private AwsProperties awsProperties;
+
     @InjectMocks
     private AvatarServiceImpl avatarService;
 
@@ -48,9 +51,8 @@ public class AvatarServiceImplTest {
     // ------------------------------------
 
     @BeforeEach
-    void setUp() throws NoSuchFieldException, IllegalAccessException {
-        setPrivateField(avatarService, "avatarBucketName", "bucket-name");
-        setPrivateField(avatarService, "region", "region-name");
+    void setUp() {
+        lenient().when(awsProperties.s3()).thenReturn(new AwsProperties.S3("region-name", "bucket-name"));
 
         avatar.setId(avatarId);
         avatar.setAvatarName("Default");
@@ -64,15 +66,6 @@ public class AvatarServiceImplTest {
 
         multipartFile = new MockMultipartFile("file", "filename.jpg", "image/jpeg", "some content".getBytes());
         createRequest = new CreateAvatarRequest(avatar.getAvatarName(), multipartFile);
-    }
-
-    // ------------------------------------
-
-    private void setPrivateField(Object targetObject, String fieldName, Object value)
-            throws NoSuchFieldException, IllegalAccessException {
-        Field field = targetObject.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(targetObject, value);
     }
 
     // ------------------------------------
