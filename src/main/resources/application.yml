@@ -1,35 +1,31 @@
-# Server properties
-server:
-  port: 8111
-
 # Application metadata
 info:
   app:
-    environment: DEV
+    environment: ${spring.profiles.active}
     name: ${spring.application.name}
-    description: Profile Service - Local Instance
+    description: Streamix Profile Service
 
-# Spring properties
+# Spring application and infrastructure configuration
 spring:
   application:
     name: users-profile
-  profiles:
-    active: dev
   config:
     import:
       - optional:configserver:discovery://config-server
-      - optional:file:../env/dev.properties
   datasource:
-    url: ${DB_URL}
-    driverClassName: ${DB_DRIVER_CLASS}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5433/streamixdb
+    driver-class-name: org.postgresql.Driver
+    username: streamix
+    password: streamix
   jpa:
-    database-platform: ${DB_DIALECT}
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: streamix_profile
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -44,42 +40,42 @@ spring:
         "[spring.json.trusted.packages]": "com.mariuszilinskas.streamix.*"
         "[spring.json.value.default.type]": "com.mariuszilinskas.streamix.users.profile.event.UserRegisteredEvent"
   rabbitmq:
-    host: ${RMQ_HOST}
-    port: ${RMQ_PORT}
-    username: ${RMQ_USERNAME}
-    password: ${RMQ_PASSWORD}
+    host: localhost
+    port: 5672
+    username: streamix
+    password: streamix
  
-# AWS properties
+# AWS configuration
 aws:
   access-key: ${AWS_ACCESS_KEY}
   secret-key: ${AWS_SECRET_KEY}
   s3:
-    region: ${AWS_REGION}
-    avatar-bucket-name: ${AWS_AVATAR_BUCKET_NAME}
+    region: eu-west-2
+    avatar-bucket-name: streamix-user-avatars-dev
 
-# Service discovery properties
+# Service discovery configuration
 eureka:
   client:
-    fetchRegistry: true
-    registerWithEureka: true
-    serviceUrl:
-      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE}
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      default-zone: http://localhost:8761/eureka
   instance:
-    preferIpAddress: true
+    prefer-ip-address: true
 
-# Messaging properties
+# Messaging configuration
 kafka:
   topics:
-    user-registered: ${KAFKA_USER_REGISTERED_TOPIC}
+    user-registered: streamix.user.registered
   groups:
-    profile-registration: ${KAFKA_PROFILE_REGISTRATION_GROUP}
+    profile-registration: streamix-users-profile-registration
 
 rabbitmq:
   queues:
-    profile-setup: ${RMQ_PROFILE_SETUP_Q}
-    delete-user-data: ${RMQ_DELETE_USER_DATA_Q}
+    profile-setup: profile-setup
+    delete-user-data: delete-user-data
 
-# Management and observability properties
+# Actuator and observability configuration
 management:
   info:
     env:
@@ -87,10 +83,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: info, health, refresh, prometheus
+        include: info, health, prometheus
   endpoint:
     health:
-      show-details: always
+      show-details: when-authorized
   opentelemetry:
     resource-attributes:
       service.name: ${spring.application.name}
@@ -99,15 +95,15 @@ management:
     tracing:
       export:
         otlp:
-          endpoint: ${OTEL_TRACES_ENDPOINT}
+          endpoint: http://localhost:4318/v1/traces
   otlp:
     metrics:
       export:
-        url: ${OTEL_METRICS_ENDPOINT}
+        url: http://localhost:4318/v1/metrics
 
-# Logging properties
+# Application logging configuration
 logging:
   level:
     root: INFO
-    org.springframework.web: DEBUG
-    com.mariuszilinskas.streamix: DEBUG
+    org.springframework.web: INFO
+    com.mariuszilinskas.streamix: INFO
