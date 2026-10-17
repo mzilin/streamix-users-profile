@@ -68,11 +68,10 @@ kafka:
   topics:
     user-registered: streamix.user.registered
   groups:
-    profile-registration: streamix-users-profile-registration
+    profile-setup: streamix-users-profile-setup
 
 rabbitmq:
   queues:
-    profile-setup: profile-setup
     delete-user-data: delete-user-data
 
 # Actuator and observability configuration
