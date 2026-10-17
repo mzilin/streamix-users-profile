@@ -36,4 +36,7 @@ public class Profile {
     @Column(name = "is_kid")
     private boolean isKid;
 
+    @Column(name = "is_default", nullable = false)
+    private boolean isDefault;
+
 }
