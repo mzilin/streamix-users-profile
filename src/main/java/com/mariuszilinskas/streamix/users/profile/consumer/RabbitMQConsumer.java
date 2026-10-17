@@ -1,6 +1,5 @@
 package com.mariuszilinskas.streamix.users.profile.consumer;
 
-import com.mariuszilinskas.streamix.users.profile.dto.CreateUserDefaultProfileRequest;
 import com.mariuszilinskas.streamix.users.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,12 +15,6 @@ public class RabbitMQConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(RabbitMQConsumer.class);
     private final ProfileService profileService;
-
-    @RabbitListener(queues = "${rabbitmq.queues.profile-setup}")
-    public void consumeCreateDefaultUserProfileMessage(CreateUserDefaultProfileRequest request) {
-        logger.info("Received request to create user profile: {}", request);
-        profileService.createDefaultUserProfile(request);
-    }
 
     @RabbitListener(queues = "${rabbitmq.queues.delete-user-data}")
     public void consumeDeleteUserDataMessage(UUID userId) {
