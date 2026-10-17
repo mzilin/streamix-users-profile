@@ -6,10 +6,6 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@Entity
-@Getter
-@Setter
-@Table(name = "avatars")
 /**
  * This entity represents avatars within the platform.
  * Avatars are created by the system administrators and can be assigned
@@ -18,6 +14,10 @@ import java.util.UUID;
  *
  * @author Marius Zilinskas
  */
+@Entity
+@Getter
+@Setter
+@Table(name = "avatars", schema = "streamix_profile")
 public class Avatar {
 
     @Id

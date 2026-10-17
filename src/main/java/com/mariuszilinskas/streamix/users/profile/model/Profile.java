@@ -15,7 +15,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@Table(name = "profiles")
+@Table(name = "profiles", schema = "streamix_profile")
 public class Profile {
 
     @Id
@@ -29,11 +29,11 @@ public class Profile {
     @Column(name = "profile_name", nullable = false)
     private String profileName;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id")
     private Avatar avatar;
 
-    @Column(name = "is_kid")
+    @Column(name = "is_kid", nullable = false)
     private boolean isKid;
 
     @Column(name = "is_default", nullable = false)
