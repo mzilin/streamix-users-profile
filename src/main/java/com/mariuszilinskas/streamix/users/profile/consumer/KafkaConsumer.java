@@ -1,7 +1,6 @@
 package com.mariuszilinskas.streamix.users.profile.consumer;
 
-import com.mariuszilinskas.streamix.users.profile.dto.CreateUserDefaultProfileRequest;
-import com.mariuszilinskas.streamix.users.profile.event.UserRegisteredEvent;
+import com.mariuszilinskas.streamix.users.profile.event.UserDeletedEvent;
 import com.mariuszilinskas.streamix.users.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,14 +16,13 @@ public class KafkaConsumer {
     private final ProfileService profileService;
 
     @KafkaListener(
-            topics = "${kafka.topics.user-registered}",
-            groupId = "${kafka.groups.profile-setup}",
+            topics = "${kafka.topics.user-deleted}",
+            groupId = "${kafka.groups.user-deletion}",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    public void handleUserRegistered(UserRegisteredEvent event) {
-        logger.info("Received UserRegistered event for User [userId: '{}']", event.userId());
-        profileService.createDefaultUserProfile(
-                new CreateUserDefaultProfileRequest(event.userId(), event.firstName()));
+    public void handleUserDeleted(UserDeletedEvent event) {
+        logger.info("Received UserDeleted event for User [userId: '{}']", event.userId());
+        profileService.deleteAllUserProfiles(event.userId());
     }
 
 }
