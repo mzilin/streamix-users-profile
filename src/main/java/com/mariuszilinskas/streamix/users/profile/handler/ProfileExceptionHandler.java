@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * @author Marius Zilinskas
  */
 @RestControllerAdvice
-public class AppExceptionHandler extends CommonExceptionHandler {
+public class ProfileExceptionHandler extends CommonExceptionHandler {
 
     @ExceptionHandler(FileUploadException.class)
     public ResponseEntity<ErrorResponse> handleFileUploadException(FileUploadException ex) {
