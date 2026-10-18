@@ -1,12 +1,12 @@
 package com.mariuszilinskas.streamix.users.profile.service;
 
 import com.mariuszilinskas.streamix.users.profile.dto.CreateAvatarRequest;
-import com.mariuszilinskas.streamix.users.profile.exception.EntityExistsException;
 import com.mariuszilinskas.streamix.users.profile.exception.IncorrectFileException;
-import com.mariuszilinskas.streamix.users.profile.exception.ResourceNotFoundException;
 import com.mariuszilinskas.streamix.users.profile.model.Avatar;
 import com.mariuszilinskas.streamix.users.profile.properties.AwsProperties;
 import com.mariuszilinskas.streamix.users.profile.repository.AvatarRepository;
+import com.mariuszilinskas.streamix.web.exception.EntityExistsException;
+import com.mariuszilinskas.streamix.web.exception.ResourceNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

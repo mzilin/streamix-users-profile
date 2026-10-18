@@ -1,6 +1,7 @@
 package com.mariuszilinskas.streamix.users.profile.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "avatars", schema = "streamix_profile")
 public class Avatar {
 

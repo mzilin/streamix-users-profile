@@ -1,13 +1,13 @@
 package com.mariuszilinskas.streamix.users.profile.service;
 
 import com.mariuszilinskas.streamix.users.profile.dto.CreateAvatarRequest;
-import com.mariuszilinskas.streamix.users.profile.exception.EntityExistsException;
 import com.mariuszilinskas.streamix.users.profile.exception.FileUploadException;
 import com.mariuszilinskas.streamix.users.profile.exception.IncorrectFileException;
-import com.mariuszilinskas.streamix.users.profile.exception.ResourceNotFoundException;
 import com.mariuszilinskas.streamix.users.profile.model.Avatar;
 import com.mariuszilinskas.streamix.users.profile.properties.AwsProperties;
 import com.mariuszilinskas.streamix.users.profile.repository.AvatarRepository;
+import com.mariuszilinskas.streamix.web.exception.EntityExistsException;
+import com.mariuszilinskas.streamix.web.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
