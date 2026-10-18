@@ -2,7 +2,7 @@ package com.mariuszilinskas.streamix.users.profile.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor
 @Table(name = "avatars", schema = "streamix_profile")
 public class Avatar {
 
@@ -33,5 +33,11 @@ public class Avatar {
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
+
+    public Avatar(String avatarName, String objectKey, String imageUrl) {
+        this.avatarName = avatarName;
+        this.objectKey = objectKey;
+        this.imageUrl = imageUrl;
+    }
 
 }
