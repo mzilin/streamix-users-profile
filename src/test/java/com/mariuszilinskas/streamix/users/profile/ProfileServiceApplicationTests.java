@@ -2,8 +2,6 @@ package com.mariuszilinskas.streamix.users.profile;
 
 import com.mariuszilinskas.streamix.users.profile.config.AwsS3Config;
 import com.mariuszilinskas.streamix.users.profile.config.FeignConfig;
-import com.mariuszilinskas.streamix.users.profile.config.RabbitMQConfig;
-import com.mariuszilinskas.streamix.users.profile.consumer.RabbitMQConsumer;
 import com.mariuszilinskas.streamix.users.profile.controller.AvatarAdminController;
 import com.mariuszilinskas.streamix.users.profile.controller.ProfileController;
 import com.mariuszilinskas.streamix.users.profile.repository.AvatarRepository;
@@ -45,12 +43,6 @@ class ProfileServiceApplicationTests {
 
     @Autowired
     private FeignConfig feignConfig;
-
-    @Autowired
-    private RabbitMQConfig rabbitMQConfig;
-
-    @Autowired
-    private RabbitMQConsumer rabbitMQConsumer;
 
     @Test
     void contextLoads() {
@@ -94,16 +86,6 @@ class ProfileServiceApplicationTests {
     @Test
     void feignConfigBeanLoads() {
         assertNotNull(feignConfig, "Feign Config should have been auto-wired by Spring Context");
-    }
-
-    @Test
-    void rabbitMQConfigBeanLoads() {
-        assertNotNull(rabbitMQConfig, "RabbitMQ Config should have been auto-wired by Spring Context");
-    }
-
-    @Test
-    void rabbitMQConsumerBeanLoads() {
-        assertNotNull(rabbitMQConsumer, "RabbitMQ Consumer should have been auto-wired by Spring Context");
     }
 
 }
