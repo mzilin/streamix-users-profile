@@ -1,12 +1,12 @@
 package com.mariuszilinskas.streamix.users.profile.service;
 
-import com.mariuszilinskas.streamix.users.profile.dto.CreateUserDefaultProfileRequest;
 import com.mariuszilinskas.streamix.users.profile.dto.CreateUserProfileRequest;
-import com.mariuszilinskas.streamix.users.profile.exception.EntityExistsException;
-import com.mariuszilinskas.streamix.users.profile.exception.ResourceNotFoundException;
 import com.mariuszilinskas.streamix.users.profile.model.Avatar;
 import com.mariuszilinskas.streamix.users.profile.model.Profile;
 import com.mariuszilinskas.streamix.users.profile.repository.ProfileRepository;
+import com.mariuszilinskas.streamix.web.exception.EntityExistsException;
+import com.mariuszilinskas.streamix.web.exception.EntityLimitExceededException;
+import com.mariuszilinskas.streamix.web.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,89 +35,32 @@ public class ProfileServiceImplTest {
     @InjectMocks
     private ProfileServiceImpl profileService;
 
-    private final UUID userId = UUID.randomUUID();
-    private final UUID profileId = UUID.randomUUID();
-    private final UUID avatarId = UUID.randomUUID();
-    private final Avatar avatar = new Avatar();
-    private final Profile profile = new Profile();
-    private final Profile profile2 = new Profile();
-    private CreateUserProfileRequest createRequest;
-    private CreateUserDefaultProfileRequest createDefaultRequest;
-
     // ------------------------------------
+
+    private final UUID userId = UUID.randomUUID();
+    private final Avatar avatar = new Avatar("Avatar 1", "avatars/avatar-1.png", "https://example.com/avatar-1.png");
+    private final UUID avatarId = avatar.getId();
+    private Profile profile;
+    private Profile profile2;
+    private UUID profileId;
+    private CreateUserProfileRequest createRequest;
+
+// ------------------------------------
 
     @BeforeEach
     void setUp() {
-        avatar.setId(avatarId);
+        profile = new Profile(userId);
+        profile.updateProfile("Profile 1", avatar, false);
+        profileId = profile.getId();
 
-        profile.setId(profileId);
-        profile.setUserId(userId);
-        profile.setProfileName("Profile 1");
-        profile.setAvatar(avatar);
-        profile.setKid(false);
-
-        profile2.setId(UUID.randomUUID());
-        profile2.setUserId(userId);
-        profile2.setProfileName("Profile 2");
-        profile2.setAvatar(avatar);
-        profile2.setKid(true);
-
-        createDefaultRequest = new CreateUserDefaultProfileRequest(userId, "Name");
+        profile2 = new Profile(userId);
+        profile2.updateProfile("Profile 2", avatar, true);
 
         createRequest = new CreateUserProfileRequest(
                 profile.getProfileName(),
-                profile.getAvatar().getId(),
+                avatarId,
                 profile.isKid()
         );
-
-    }
-
-    // ------------------------------------
-
-    @Test
-    void testCreateDefaultUserProfile_Success() {
-        // Arrange
-        ArgumentCaptor<Profile> captor = ArgumentCaptor.forClass(Profile.class);
-
-        when(avatarService.getRandomAvatar()).thenReturn(avatar);
-        when(profileRepository.save(captor.capture())).thenReturn(profile);
-
-        // Act
-        Profile response = profileService.createDefaultUserProfile(createDefaultRequest);
-
-        // Assert
-        assertNotNull(response);
-
-        verify(avatarService, times(1)).getRandomAvatar();
-        verify(profileRepository, times(1)).save(captor.capture());
-
-        Profile savedProfile = captor.getValue();
-        assertEquals(createDefaultRequest.firstName(), savedProfile.getProfileName());
-        assertEquals(avatarId, savedProfile.getAvatar().getId());
-        assertEquals(false, savedProfile.isKid());
-    }
-
-    @Test
-    void testCreateDefaultUserProfile_NoAvatarFound() {
-        // Arrange
-        ArgumentCaptor<Profile> captor = ArgumentCaptor.forClass(Profile.class);
-
-        when(avatarService.getRandomAvatar()).thenReturn(null);
-        when(profileRepository.save(captor.capture())).thenReturn(profile);
-
-        // Act
-        Profile response = profileService.createDefaultUserProfile(createDefaultRequest);
-
-        // Assert
-        assertNotNull(response);
-
-        verify(avatarService, times(1)).getRandomAvatar();
-        verify(profileRepository, times(1)).save(captor.capture());
-
-        Profile savedProfile = captor.getValue();
-        assertEquals(createDefaultRequest.firstName(), savedProfile.getProfileName());
-        assertEquals(null, savedProfile.getAvatar());
-        assertEquals(false, savedProfile.isKid());
     }
 
     // ------------------------------------
@@ -126,6 +70,7 @@ public class ProfileServiceImplTest {
         // Arrange
         ArgumentCaptor<Profile> captor = ArgumentCaptor.forClass(Profile.class);
 
+        when(profileRepository.findAllByUserId(userId)).thenReturn(Collections.emptyList());
         when(profileRepository.existsByUserIdAndProfileName(userId, createRequest.profileName())).thenReturn(false);
         when(avatarService.getAvatar(createRequest.avatarId())).thenReturn(avatar);
         when(profileRepository.save(captor.capture())).thenReturn(profile);
@@ -136,6 +81,7 @@ public class ProfileServiceImplTest {
         // Assert
         assertNotNull(response);
 
+        verify(profileRepository, times(1)).findAllByUserId(userId);
         verify(profileRepository, times(1)).existsByUserIdAndProfileName(userId, createRequest.profileName());
         verify(avatarService, times(1)).getAvatar(avatarId);
         verify(profileRepository, times(1)).save(captor.capture());
@@ -149,12 +95,29 @@ public class ProfileServiceImplTest {
     @Test
     void testCreateUserProfile_NameExists() {
         // Arrange
+        when(profileRepository.findAllByUserId(userId)).thenReturn(List.of(new Profile(userId)));
         when(profileRepository.existsByUserIdAndProfileName(userId, createRequest.profileName())).thenReturn(true);
 
         // Act & Assert
         assertThrows(EntityExistsException.class, () -> profileService.createUserProfile(userId, createRequest));
 
+        verify(profileRepository, times(1)).findAllByUserId(userId);
         verify(profileRepository, times(1)).existsByUserIdAndProfileName(any(UUID.class), anyString());
+        verify(avatarService, never()).getAvatar(any(UUID.class));
+        verify(profileRepository, never()).save(any(Profile.class));
+    }
+
+
+    @Test
+    void testCreateUserProfile_MaxProfilesPerUser() {
+        // Arrange
+        when(profileRepository.findAllByUserId(userId)).thenReturn(Collections.nCopies(6, new Profile(userId)));
+
+        // Act & Assert
+        assertThrows(EntityLimitExceededException.class, () -> profileService.createUserProfile(userId, createRequest));
+
+        verify(profileRepository, times(1)).findAllByUserId(userId);
+        verify(profileRepository, never()).existsByUserIdAndProfileName(any(UUID.class), anyString());
         verify(avatarService, never()).getAvatar(any(UUID.class));
         verify(profileRepository, never()).save(any(Profile.class));
     }

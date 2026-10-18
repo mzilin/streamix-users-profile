@@ -1,8 +1,9 @@
 package com.mariuszilinskas.streamix.users.profile.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
@@ -14,12 +15,11 @@ import java.util.UUID;
  */
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "profiles", schema = "streamix_profile")
 public class Profile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable = false, nullable = false)
     private UUID id;
 
@@ -36,7 +36,15 @@ public class Profile {
     @Column(name = "is_kid", nullable = false)
     private boolean isKid;
 
-    @Column(name = "is_default", nullable = false)
-    private boolean isDefault;
+    public Profile(UUID userId) {
+        this.id = UUID.randomUUID();
+        this.userId = userId;
+    }
+
+    public void updateProfile(String profileName, Avatar avatar, boolean isKid) {
+        this.profileName = profileName;
+        this.avatar = avatar;
+        this.isKid = isKid;
+    }
 
 }
