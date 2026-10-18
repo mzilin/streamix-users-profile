@@ -1,1 +1,1 @@
-CREATE SCHEMA IF NOT EXISTS streamix_profile;
+CREATE SCHEMA streamix_profile;
