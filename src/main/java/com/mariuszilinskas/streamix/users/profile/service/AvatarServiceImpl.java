@@ -72,11 +72,7 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     private Avatar populateNewAvatarWithRequestData(CreateAvatarRequest request, String objectKey) {
-        Avatar newAvatar = new Avatar(
-                request.avatarName(),
-                objectKey,
-                generateObjectUrl(objectKey)
-        );
+        Avatar newAvatar = new Avatar(request.avatarName(), objectKey, generateObjectUrl(objectKey));
         return avatarRepository.save(newAvatar);
     }
 

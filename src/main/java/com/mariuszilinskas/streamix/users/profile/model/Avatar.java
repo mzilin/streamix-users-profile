@@ -21,7 +21,6 @@ import java.util.UUID;
 public class Avatar {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable = false, nullable = false)
     private UUID id;
 
@@ -35,6 +34,7 @@ public class Avatar {
     private String imageUrl;
 
     public Avatar(String avatarName, String objectKey, String imageUrl) {
+        this.id = UUID.randomUUID();
         this.avatarName = avatarName;
         this.objectKey = objectKey;
         this.imageUrl = imageUrl;
