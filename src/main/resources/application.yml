@@ -26,6 +26,7 @@ spring:
     schemas:
       - streamix_profile
     default-schema: streamix_profile
+    create-schemas: true
     locations: classpath:db/migration
     baseline-on-migrate: false
     validate-on-migrate: true
