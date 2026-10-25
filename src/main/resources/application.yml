@@ -23,6 +23,9 @@ spring:
     password: streamix
   flyway:
     enabled: true
+    schemas:
+      - streamix_profile
+    default-schema: streamix_profile
     locations: classpath:db/migration
     baseline-on-migrate: false
     validate-on-migrate: true
