@@ -1,15 +1,12 @@
 package com.mariuszilinskas.streamix.users.profile.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Entity
-@Getter
-@Setter
-@Table(name = "avatars")
 /**
  * This entity represents avatars within the platform.
  * Avatars are created by the system administrators and can be assigned
@@ -18,10 +15,13 @@ import java.util.UUID;
  *
  * @author Marius Zilinskas
  */
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "avatars", schema = "streamix_profile")
 public class Avatar {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable = false, nullable = false)
     private UUID id;
 
@@ -33,5 +33,12 @@ public class Avatar {
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
+
+    public Avatar(String avatarName, String objectKey, String imageUrl) {
+        this.id = UUID.randomUUID();
+        this.avatarName = avatarName;
+        this.objectKey = objectKey;
+        this.imageUrl = imageUrl;
+    }
 
 }

@@ -6,13 +6,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record UserRegisteredEvent(
+public record UserDeletedEvent(
         UUID eventId,
         String eventVersion,
         Instant occurredAt,
-        UUID userId,
-        String email,
-        String firstName,
-        String lastName,
-        String country
+        UUID userId
 ) {}

@@ -1,6 +1,5 @@
 package com.mariuszilinskas.streamix.users.profile.service;
 
-import com.mariuszilinskas.streamix.users.profile.dto.CreateUserDefaultProfileRequest;
 import com.mariuszilinskas.streamix.users.profile.dto.CreateUserProfileRequest;
 import com.mariuszilinskas.streamix.users.profile.model.Profile;
 
@@ -8,8 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProfileService {
-
-    Profile createDefaultUserProfile(CreateUserDefaultProfileRequest request);
 
     Profile createUserProfile(UUID userId, CreateUserProfileRequest request);
 

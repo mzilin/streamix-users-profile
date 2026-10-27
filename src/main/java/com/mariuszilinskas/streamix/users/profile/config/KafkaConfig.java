@@ -10,8 +10,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
+import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 import org.springframework.kafka.support.serializer.DeserializationException;
-import org.springframework.util.backoff.FixedBackOff;
 
 @Configuration
 @RequiredArgsConstructor
@@ -21,10 +21,10 @@ public class KafkaConfig {
     private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<Object, Object>
-            kafkaListenerContainerFactory(
-                    ConsumerFactory<Object, Object> consumerFactory,
-                    DefaultErrorHandler kafkaErrorHandler) {
+    public ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory(
+            ConsumerFactory<Object, Object> consumerFactory,
+            DefaultErrorHandler kafkaErrorHandler
+    ) {
         var factory = new ConcurrentKafkaListenerContainerFactory<Object, Object>();
         factory.setConsumerFactory(consumerFactory);
         factory.setRecordInterceptor(kafkaConsumerInterceptor);
@@ -34,11 +34,23 @@ public class KafkaConfig {
 
     @Bean
     public DefaultErrorHandler kafkaErrorHandler() {
-        var recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate,
-                (record, ex) -> new TopicPartition(record.topic() + ".dlt", record.partition()));
-        var backoff = new FixedBackOff(1_000L, 3L);
+        var recoverer = new DeadLetterPublishingRecoverer(
+                kafkaTemplate,
+                (record, exception) -> new TopicPartition(
+                        record.topic() + ".dlt",
+                        record.partition()
+                )
+        );
+        recoverer.setFailIfSendResultIsError(true);
+
+        var backoff = new ExponentialBackOffWithMaxRetries(3);
+        backoff.setInitialInterval(1_000L);
+        backoff.setMultiplier(2.0);
+        backoff.setMaxInterval(10_000L);
+
         var handler = new DefaultErrorHandler(recoverer, backoff);
         handler.addNotRetryableExceptions(DeserializationException.class);
+
         return handler;
     }
 

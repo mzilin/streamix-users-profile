@@ -1,12 +1,13 @@
 package com.mariuszilinskas.streamix.users.profile.service;
 
 import com.mariuszilinskas.streamix.users.profile.dto.CreateAvatarRequest;
-import com.mariuszilinskas.streamix.users.profile.exception.EntityExistsException;
 import com.mariuszilinskas.streamix.users.profile.exception.IncorrectFileException;
-import com.mariuszilinskas.streamix.users.profile.exception.ResourceNotFoundException;
 import com.mariuszilinskas.streamix.users.profile.model.Avatar;
 import com.mariuszilinskas.streamix.users.profile.properties.AwsProperties;
 import com.mariuszilinskas.streamix.users.profile.repository.AvatarRepository;
+import com.mariuszilinskas.streamix.web.exception.EntityExistsException;
+import com.mariuszilinskas.streamix.web.exception.ResourceNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import java.util.UUID;
 
 /**
  * Service implementation for managing user avatars.
- * This service handles user creation, retrieval and deletion.
+ * This service handles avatar creation, retrieval and deletion.
  *
  * @author Marius Zilinskas
  */
@@ -38,6 +39,7 @@ public class AvatarServiceImpl implements AvatarService {
     );
 
     @Override
+    @Transactional
     public Avatar createAvatar(CreateAvatarRequest request) throws IOException {
         logger.info("Creating Avatar: '{}", request.avatarName());
         checkNameExists(request.avatarName());
@@ -50,14 +52,6 @@ public class AvatarServiceImpl implements AvatarService {
         if (avatarRepository.existsByAvatarName(avatarName)) {
             throw new EntityExistsException(Avatar.class, "name", avatarName);
         }
-    }
-
-    private Avatar populateNewAvatarWithRequestData(CreateAvatarRequest request, String objectKey) {
-        Avatar newAvatar = new Avatar();
-        newAvatar.setAvatarName(request.avatarName());
-        newAvatar.setObjectKey(objectKey);
-        newAvatar.setImageUrl(generateObjectUrl(objectKey));
-        return avatarRepository.save(newAvatar);
     }
 
     private String generateObjectKey(String originalFileName) {
@@ -77,6 +71,11 @@ public class AvatarServiceImpl implements AvatarService {
         throw new IncorrectFileException(extension);
     }
 
+    private Avatar populateNewAvatarWithRequestData(CreateAvatarRequest request, String objectKey) {
+        Avatar newAvatar = new Avatar(request.avatarName(), objectKey, generateObjectUrl(objectKey));
+        return avatarRepository.save(newAvatar);
+    }
+
     private String generateObjectUrl(String objectKey) {
         return String.format(
                 "https://%s.s3.%s.amazonaws.com/%s",
@@ -87,21 +86,24 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Avatar> getAvatars() {
         logger.info("Getting all Avatars");
         return avatarRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Avatar getAvatar(UUID avatarId) {
         logger.info("Getting Avatar [id: '{}']", avatarId);
         return findAvatarById(avatarId);
     }
 
     /**
-     * Used when choosing random avatars from new users
+     * Used when choosing random avatars for new users
      */
     @Override
+    @Transactional(readOnly = true)
     public Avatar getRandomAvatar() {
         logger.info("Getting random Avatar");
         List<Avatar> avatars = avatarRepository.findAll();
@@ -113,6 +115,7 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     @Override
+    @Transactional
     public void deleteAvatar(UUID avatarId) {
         logger.info("Deleting Avatar [id: '{}']", avatarId);
         Avatar avatar = findAvatarById(avatarId);

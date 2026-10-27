@@ -1,13 +1,13 @@
 package com.mariuszilinskas.streamix.users.profile.service;
 
 import com.mariuszilinskas.streamix.users.profile.dto.CreateAvatarRequest;
-import com.mariuszilinskas.streamix.users.profile.exception.EntityExistsException;
 import com.mariuszilinskas.streamix.users.profile.exception.FileUploadException;
 import com.mariuszilinskas.streamix.users.profile.exception.IncorrectFileException;
-import com.mariuszilinskas.streamix.users.profile.exception.ResourceNotFoundException;
 import com.mariuszilinskas.streamix.users.profile.model.Avatar;
 import com.mariuszilinskas.streamix.users.profile.properties.AwsProperties;
 import com.mariuszilinskas.streamix.users.profile.repository.AvatarRepository;
+import com.mariuszilinskas.streamix.web.exception.EntityExistsException;
+import com.mariuszilinskas.streamix.web.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,9 +42,9 @@ public class AvatarServiceImplTest {
     @InjectMocks
     private AvatarServiceImpl avatarService;
 
-    private final UUID avatarId = UUID.randomUUID();
-    private final Avatar avatar = new Avatar();
-    private final Avatar avatar2 = new Avatar();
+    private UUID avatarId;
+    private Avatar avatar;
+    private Avatar avatar2;
     private CreateAvatarRequest createRequest;
     private MultipartFile multipartFile;
 
@@ -54,15 +54,10 @@ public class AvatarServiceImplTest {
     void setUp() {
         lenient().when(awsProperties.s3()).thenReturn(new AwsProperties.S3("region-name", "bucket-name"));
 
-        avatar.setId(avatarId);
-        avatar.setAvatarName("Default");
-        avatar.setObjectKey("test-avatar-key-1");
-        avatar.setImageUrl("http://example.com/test-avatar-key-1.jpg");
+        avatar = new Avatar("Default", "test-avatar-key-1", "http://example.com/test-avatar-key-1.jpg");
+        avatarId = avatar.getId();
 
-        avatar2.setId(UUID.randomUUID());
-        avatar2.setAvatarName("Kids");
-        avatar2.setObjectKey("test-avatar-key-2");
-        avatar2.setImageUrl("http://example.com/test-avatar-key-2.jpg");
+        avatar2 = new Avatar("Kids", "test-avatar-key-2", "http://example.com/test-avatar-key-2.jpg");
 
         multipartFile = new MockMultipartFile("file", "filename.jpg", "image/jpeg", "some content".getBytes());
         createRequest = new CreateAvatarRequest(avatar.getAvatarName(), multipartFile);
