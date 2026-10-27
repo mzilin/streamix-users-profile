@@ -111,5 +111,9 @@ management:
 logging:
   level:
     root: INFO
-    org.springframework.web: INFO
     com.mariuszilinskas.streamix: INFO
+    com.netflix: WARN
+    org.apache.kafka: WARN
+    org.springframework.amqp: WARN
+    com.rabbitmq: WARN
+    org.springframework.web.servlet: WARN
