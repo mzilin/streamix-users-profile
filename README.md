@@ -64,7 +64,6 @@ This project relies on a set of key libraries and frameworks that support its co
 - **Spring Cloud**
   - **Config Client**: Integrates with a centralised Spring Cloud Config Server for dynamic configuration management.
   - **Netflix Eureka Client**: Integrates with the Eureka Server for service registration and discovery.
-  - **OpenFeign**: Declarative HTTP client for synchronous inter-service communication.
 
 - **Database**
   - **Flyway**: Manages and tracks database migrations, ensuring that schema changes are version-controlled and consistently applied across environments.
