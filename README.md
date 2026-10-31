@@ -2,7 +2,7 @@
 
 ![Build](https://img.shields.io/github/actions/workflow/status/mzilin/streamix-users-profile/build.yml?label=Build&logo=github&logoColor=white&style=flat)
 ![Coverage](https://img.shields.io/codecov/c/github/mzilin/streamix-users-profile?label=Coverage&logo=codecov&logoColor=white&style=flat)
-![Status](https://img.shields.io/badge/status-in_progress-yellow?label=Status)
+![Status](https://img.shields.io/badge/status-complete-brightgreen?label=Status)
 
 
 This repository contains the **Profile Service** microservice for the **Streamix** (Video Streaming Platform), deployed in the **Users** cluster. It is responsible for managing user profiles, including creation, updates and deletion.
@@ -56,21 +56,31 @@ This project relies on a set of key libraries and frameworks that support its co
 
 - **Spring Boot**
   - **Actuator**: Exposes app health, metrics, and monitoring endpoints.
-  - **RabbitMQ (AMQP)**: Facilitates robust, asynchronous messaging between microservices, enhancing scalability and decoupling.
   - **Data JPA**: Simplifies database integration by managing relational data access using the Java Persistence API.
+  - **OpenTelemetry**: Provides distributed tracing, metrics and logging export via OTLP for observability.
   - **Validation**: Provides declarative validation using JSR-380 annotations.
   - **Web**: Supports building RESTful endpoints and traditional MVC-based web applications.
 
 - **Spring Cloud**
   - **Config Client**: Integrates with a centralised Spring Cloud Config Server for dynamic configuration management.
   - **Netflix Eureka Client**: Integrates with the Eureka Server for service registration and discovery.
+  - **OpenFeign**: Declarative HTTP client for synchronous inter-service communication.
 
 - **Database**
   - **Flyway**: Manages and tracks database migrations, ensuring that schema changes are version-controlled and consistently applied across environments.
   - **PostgreSQL**: A robust, open-source relational database system known for its advanced features and proven architecture.
 
-- **Inter-Service Communication**
-  - **gRPC**: Facilitates efficient, language-agnostic communication between microservices with strong typing, streaming support and high performance.
+- **Messaging & Events**
+  - **Kafka**: Provides high-throughput, fault-tolerant event streaming for asynchronous inter-service communication.
+
+- **Storage**
+  - **AWS S3**: Stores and retrieves user avatar images from a managed object storage bucket.
+
+- **Streamix Platform**
+  - **streamix-data-masking**: Shared library for masking sensitive data in responses.
+  - **streamix-observability**: Shared observability configuration and utilities.
+  - **streamix-security**: Shared security configuration including API key authentication.
+  - **streamix-web-commons**: Shared web utilities, exception handling and common DTOs.
 
 - **Developer Experience**
   - **Lombok**: Reduces boilerplate with annotations for getters, setters, and constructors.
@@ -79,6 +89,8 @@ This project relies on a set of key libraries and frameworks that support its co
 - **Testing**
   - **JUnit**: Framework for writing and running unit and integration tests in Java.
   - **Mockito**: Allows mocking and stubbing dependencies to isolate components during testing.
+  - **H2**: In-memory relational database used for fast, isolated integration tests.
+  - **Spring Kafka Test**: Provides embedded Kafka broker support for testing Kafka consumers and producers.
 
 - **Code Quality**
   - **Jacoco**: Generates code coverage reports for ensuring test completeness.
@@ -146,7 +158,11 @@ Ensure you have the following installed on your machine:
 
 This microservice requires the following environment variables to be configured:
 
-TBC
+| Variable          | Description                                              |
+|-------------------|----------------------------------------------------------|
+| `GATEWAY_API_KEY` | API key used to authenticate requests from the API Gateway. |
+| `AWS_ACCESS_KEY`  | AWS access key ID for authenticating with AWS services.  |
+| `AWS_SECRET_KEY`  | AWS secret access key for authenticating with AWS services. |
 
 
 ## Testing
@@ -163,7 +179,31 @@ This setup ensures that changes can be safely verified and that the codebase rem
 
 ## Endpoints
 
-TBC
+All endpoints are served on port `8111`.
+
+### Profile Endpoints
+
+| Method   | Path                              | Description                        | Status |
+|----------|-----------------------------------|------------------------------------|--------|
+| `POST`   | `/profile/{userId}`               | Create a new user profile          | 201    |
+| `GET`    | `/profile/{userId}`               | Get all profiles for a user        | 200    |
+| `GET`    | `/profile/{userId}/{profileId}`   | Get a specific user profile        | 200    |
+| `PUT`    | `/profile/{userId}/{profileId}`   | Update a user profile              | 200    |
+| `DELETE` | `/profile/{userId}/{profileId}`   | Delete a specific user profile     | 204    |
+| `DELETE` | `/profile/{userId}`               | Delete all profiles for a user     | 204    |
+
+### Avatar Endpoints
+
+| Method | Path      | Description         | Status |
+|--------|-----------|---------------------|--------|
+| `GET`  | `/avatar` | Get all avatars     | 200    |
+
+### Admin Avatar Endpoints
+
+| Method   | Path                      | Description                        | Status |
+|----------|---------------------------|------------------------------------|--------|
+| `POST`   | `/admin/avatars`          | Upload and create a new avatar     | 201    |
+| `DELETE` | `/admin/avatars/{avatarId}` | Delete an avatar                 | 204    |
 
 
 ## CI/CD & Deployment

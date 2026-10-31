@@ -50,14 +50,6 @@ spring:
         "[spring.json.trusted.packages]": "com.mariuszilinskas.streamix.*"
         "[spring.json.value.default.type]": "com.mariuszilinskas.streamix.users.profile.event.UserDeletedEvent"
  
-# AWS configuration
-aws:
-  access-key: ${AWS_ACCESS_KEY}
-  secret-key: ${AWS_SECRET_KEY}
-  s3:
-    region: eu-west-2
-    avatar-bucket-name: streamix-user-avatars-dev
-
 # Service discovery configuration
 eureka:
   client:
@@ -74,6 +66,19 @@ kafka:
     user-deleted: streamix.user.deleted
   groups:
     user-deletion: streamix-users-profile-user-deletion
+
+# Security configuration
+security:
+  client-keys:
+    gateway: ${GATEWAY_API_KEY}
+
+# AWS configuration
+aws:
+  access-key: ${AWS_ACCESS_KEY}
+  secret-key: ${AWS_SECRET_KEY}
+  s3:
+    region: eu-west-2
+    avatar-bucket-name: streamix-user-avatars-dev
 
 # Actuator and observability configuration
 management:

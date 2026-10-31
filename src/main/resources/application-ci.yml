@@ -21,6 +21,11 @@ eureka:
     fetch-registry: false
     register-with-eureka: false
 
+# CI Security configuration
+security:
+  client-keys:
+    gateway: dummy-key
+
 # CI AWS configuration
 aws:
   access-key: dummy-key
@@ -31,6 +36,10 @@ management:
   tracing:
     export:
       enabled: false
+  logging:
+    export:
+      otlp:
+        enabled: false
   otlp:
     metrics:
       export:
