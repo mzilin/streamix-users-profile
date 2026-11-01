@@ -1,6 +1,6 @@
 package com.mariuszilinskas.streamix.users.profile.consumer;
 
-import com.mariuszilinskas.streamix.users.profile.event.UserDeletedEvent;
+import com.mariuszilinskas.streamix.users.profile.dto.UserDeletedEvent;
 import com.mariuszilinskas.streamix.users.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

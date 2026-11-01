@@ -1,4 +1,4 @@
-package com.mariuszilinskas.streamix.users.profile.event;
+package com.mariuszilinskas.streamix.users.profile.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
