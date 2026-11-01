@@ -69,7 +69,7 @@ kafka:
 
 # Security configuration
 security:
-  client-keys:
+  inbound-keys:
     gateway: ${GATEWAY_API_KEY}
 
 # AWS configuration

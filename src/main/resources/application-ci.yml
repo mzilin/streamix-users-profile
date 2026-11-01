@@ -23,7 +23,7 @@ eureka:
 
 # CI Security configuration
 security:
-  client-keys:
+  inbound-keys:
     gateway: dummy-key
 
 # CI AWS configuration
