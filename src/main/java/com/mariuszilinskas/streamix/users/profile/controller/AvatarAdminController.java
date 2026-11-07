@@ -32,13 +32,13 @@ public class AvatarAdminController {
     ) throws IOException {
         CreateAvatarRequest request = new CreateAvatarRequest(avatarName, file);
         Avatar response =  avatarService.createAvatar(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{avatarId}")
     public ResponseEntity<Void> deleteAvatar(@PathVariable UUID avatarId) {
         avatarService.deleteAvatar(avatarId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        ResponseEntity.noContent().build();
     }
 
 }

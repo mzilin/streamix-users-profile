@@ -26,7 +26,7 @@ public class AvatarController {
     @GetMapping
     public ResponseEntity<List<Avatar>> getAvatars() {
         List<Avatar> response =  avatarService.getAvatars();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -30,13 +30,13 @@ public class ProfileController {
             @Valid @RequestBody CreateUserProfileRequest request
     ) {
         Profile response = profileService.createUserProfile(userId, request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<Profile>> getAllUserProfiles(@PathVariable UUID userId) {
         List<Profile> response = profileService.getAllUserProfiles(userId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{userId}/{profileId}")
@@ -45,7 +45,7 @@ public class ProfileController {
             @PathVariable UUID profileId
     ) {
         Profile response = profileService.getUserProfile(userId, profileId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{userId}/{profileId}")
@@ -55,7 +55,7 @@ public class ProfileController {
             @Valid @RequestBody CreateUserProfileRequest request
     ) {
         Profile response = profileService.updateUserProfile(userId, profileId, request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{userId}/{profileId}")
@@ -64,13 +64,13 @@ public class ProfileController {
             @PathVariable UUID profileId
     ) {
         profileService.deleteUserProfile(userId, profileId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteAllUserProfiles(@PathVariable UUID userId) {
         profileService.deleteAllUserProfiles(userId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        ResponseEntity.noContent().build();
     }
 
 }
